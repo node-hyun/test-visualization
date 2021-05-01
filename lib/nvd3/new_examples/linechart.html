@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인프런과 함께 하는 시각화 강좌</title>
+    <link href="../build/nv.d3.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js" charset="utf-8"></script>
+
+    <style>
+        text {
+            font: 12px sans-serif;
+        }
+
+        svg {
+            display: block;
+        }
+
+        html,
+        body,
+        #chart1,
+        svg {
+            margin: 0px;
+            padding: 0px;
+            height: 100%;
+            width: 100%;
+        }
+
+        .dashed {
+            stroke-dasharray: 5, 5;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js" charset="utf-8"></script>
+    <script src="/lib/nvd3/build/nv.d3.js"></script>
+
+    <script type="text/javascript">
+        var chart;
+        var legendPosition = "top";
+
+        function sinAndCos() {
+            var sin = [],
+                cos = [];
+
+            for (var i = 0; i < 100; i++) {
+                sin.push({ x: i, y: Math.sin(i / 10) });
+                cos.push({ x: i, y: .5 * Math.cos(i / 10) })
+            }
+
+            return [
+                {
+                    values: sin,
+                    key: "Sine Wave",
+                    color: "#ff7f0"
+                },
+                {
+                    values: cos,
+                    key: "Cosine Wave",
+                    color: "#2ca02c"
+                }
+            ];
+        }
+
+        nv.addGraph(function(){
+            chart = nv.models.lineChart()
+                .options({
+                    duration: 300,
+                    useInterativeGruideline: true
+                })
+
+            chart.xAxis.axisLabel("Time (s)").tickFormat(d3.format(',.1f'));
+            chart.yAxis.axisLabel("Time (v)").tickFormat(function(d){
+                if(d == null){
+                    return 'N/A';
+                }
+                return d3.format(',.2f')(d);
+            });
+            d3.select("#chart svg").datum(sinAndCos()).call(chart);
+
+            nv.utils.windowResize(chart.update);
+
+            return chart;
+        })
+
+    </script>
+
+</head>
+<body class="width-3d-shadow with-transitions">
+    <div style="position:absolute; top:0; left:0;">
+        <button onClick="toggleLegend();">Toggle Legend Top/Bottom</button>
+    </div>
+
+    <div id="header" style="text-align:center;">
+        <h2>nvd3.js 샘플 LineChart</h2>
+    </div>
+    <br><br>
+    <div id="content" style="height:300px; width:100%;">
+        svg
+    </div>
+
+</body>
+</html>
