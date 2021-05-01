@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>인프런과 함께하는 시각화 강좌</title>
+
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.flot.js"></script>
+    <script src="/lib/flot/jquery.flot.stack.js"></script>
+    <script src="/lib/flot/jquery.flot.symbol.js"></script>
+    <script src="custom.js"></script>
+
+</head>
+
+<script type="text/javascript">
+    var line_option = {
+        series: {
+            lines: { show: true },
+            points: { show: true }
+        }
+    };
+    var bar_option = {
+        series: {
+            //stack:true,
+            bars: { show: true },
+            points: { show: true }
+        }
+    };
+    var stack_option = {
+        series: {
+            stack: true,
+            lines: {
+                show: true,
+                fill: true
+            },
+            points: { show: true }
+        }
+    };
+    var scatter_option = {
+        series: {
+            lines: { show: false },
+            points: { show: true }
+        }
+    };
+    $(document).ready(function () {
+
+        var d1 = [[0, 3], [1, 8], [2, 5], [3, 13], [4, 9], [5,10], [6,11], [7,3], [8,15], [9,16], [10,20]];
+        var d2 = [[0, 3], [1, 11], [2, 3], [3, 19], [4, 5], [5,2], [6,16], [7,31], [8,12], [9,6], [10,2]];
+
+        //var d2 = [[0, 12], [7, 12], null, [7, 2.5], [12, 2.5]];
+        // d2 = [[0, 12], [4, 12], [108,2], [9, 2.5], [11, 2.5]];
+
+        var plotObj1 = $.plot("#chart1", [d1,d2], line_option);
+        var plotObj2 = $.plot("#chart2", [d1,d2], bar_option);
+        var plotObj3 = $.plot("#chart3", [d1,d2], stack_option);
+
+        var scatter_data = [
+            { label: "label 1", data: d1, points: { symbol: "triangle", fillColor: "blue" }, color: "blue" },
+            { label: "label 2", data: d2, points: { symbol: "square", fillColor: "red" }, color: "red" }
+        ];
+
+        var plotObj4 = $.plot("#chart4", scatter_data, scatter_option);
+
+
+        //$.plot("#chart", [ d1 ]);
+        //$.plot("#chart", [ d2 ]);
+        //$.plot("#chart", [ d1, d2, d3 ]);
+        // $.plot("DOM Object", [데이터+옵션], [옵션])
+
+        // 특수옵션 - categories bar
+        // point background scatter
+
+    });
+</script>
+
+<body>
+<div id="header" style="text-align: center;">
+    <h2>flot.js 샘플</h2>
+</div>
+<br><br>
+<div id="content">
+    <div id="chart1" style="width: 100%; height: 300px;"></div>
+    <div id="chart2" style="width: 100%; height: 300px;"></div>
+    <div id="chart3" style="width: 100%; height: 300px;"></div>
+    <div id="chart4" style="width: 100%; height: 300px;"></div>
+</div>
+
+<br><br><br><br>
+<div id="footer" style="text-align: center;">
+    Copyright &copy; 2017 Inflern Service
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <title>인프런과 함께하는 시각화 강좌</title>
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.flot.js"></script>
+    <script src="/lib/flot/jquery.flot.stack.js"></script>
+    <script src="/lib/flot/jquery.flot.symbol.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var d1 = [
+                [0, 3],
+                [1, 8],
+                [2, 5],
+                [3, 13],
+                [4, 9],
+                [5, 10],
+                [6, 11],
+                [7, 3],
+                [8, 15],
+                [9, 16],
+                [10, 20]
+            ];
+
+            var line_option = {
+                series: {
+                    lines: { show: true },
+                    points: { show: true }
+                }
+            }
+
+            // $.plot 함수를 이용해 차트를 그린다.
+            // 첫번째 인자는 위치, 두번째 데이터, 세번째는 옵션
+            var plotObj1 = $.plot("#chart1", [d1], line_option)
+        });
+
+    </script>
+</head>
+<body>
+
+    <div id="header" style="text-align:center;">
+        <h2>flot.js 샘플</h2>
+    </div>
+    <br><br>
+
+    시각화 프로그래밍 start
+
+    <div class="content">
+        <div id="chart1" style="height:300px; width:100%"></div>
+    </div>
+
+</body>
+</html>

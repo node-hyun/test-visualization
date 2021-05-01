@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>인프런과 함께하는 시각화 강좌</title>
+
+    <style type="text/css">
+        #legendContainer {
+            background-color: #fff;
+            padding: 2px;
+            margin-bottom: 8px;
+            border-radius: 3px 3px 3px 3px;
+            border: 1px solid #E6E6E6;
+            display: inline-block;
+            margin: 0 auto;
+        }
+    </style>
+
+
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.flot.js"></script>
+    <script src="/lib/flot/jquery.flot.stack.js"></script>
+    <script src="/lib/flot/jquery.flot.symbol.js"></script>
+    <script src="/lib/flot/jquery.flot.crosshair.js"></script>
+    <script src="/lib/flot/jquery.flot.selection.js"></script>
+    <script src="/lib/flot/jquery.flot.time.js"></script>
+    <script src="custom.js"></script>
+
+</head>
+<script type="text/javascript">
+    var plotObj1 = null; // crosshair 차트
+    var legends = null; // corsshair legend
+
+    var plotObj2 = null; // bar chart (categories)
+    var plotObj3 = null; // stack chart (selection zoom)
+    var plotObj4 = null; // scatter chart?...(realtime?)
+
+    var randam_data = [],
+        totalPoints = 300;
+
+    $(document).ready(function () {
+        var d1 = [[0, 3], [1, 8], [2, 5], [3, 13], [4, 9], [5,10], [6,11], [7,3], [8,15], [9,16], [10,20]];
+        var d2 = [[0, 3], [1, 11], [2, 3], [3, 19], [4, 5], [5,2], [6,16], [7,31], [8,12], [9,6], [10,2]];
+
+
+        var line_data = [
+            { label: "label 1", data: d1 },
+            { label: "label 2", data: d2 }
+        ];
+        var line_option = {
+            series: {
+                lines: { show: true },
+                points: { show: true },
+            },
+            legend:{
+                container:$("#legendContainer"),
+                noColumns: 0
+            },
+            crosshair: {
+                mode: "xy"
+            },
+            grid: {
+                hoverable: true,
+                autoHighlight: false
+            },
+        };
+        plotObj1 = $.plot("#chart1", line_data, line_option);
+
+        legends = $("#legendContainer .legendLabel");
+
+        legends.each(function () {
+            // fix the widths so they don't jump around
+            $(this).css('width', $(this).width());
+        });
+
+        var updateLegendTimeout = null;
+        var latestPosition = null;
+        function updateLegend() {
+            updateLegendTimeout = null;
+
+            var pos = latestPosition;
+            var axes = plotObj1.getAxes();
+            if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
+                pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
+                return;
+            }
+
+            var i, j, dataset = plotObj1.getData();
+            for (i = 0; i < dataset.length; ++i) {
+                var series = dataset[i];
+                // Find the nearest points, x-wise
+
+                for (j = 0; j < series.data.length; ++j) {
+                    if (series.data[j][0] > pos.x) {
+                        break;
+                    }
+                }
+                // Now Interpolate
+                var y,
+                    p1 = series.data[j - 1],
+                    p2 = series.data[j];
+
+                if (p1 == null) {
+                    y = p2[1];
+                } else if (p2 == null) {
+                    y = p1[1];
+                } else {
+                    y = p1[1] + (p2[1] - p1[1]) * (pos.x - p1[0]) / (p2[0] - p1[0]);
+                }
+
+                legends.eq(i).text(series.label + "=" + y);
+            }
+        }
+
+        $("#chart1").bind("plothover",  function (event, pos, item) {
+            latestPosition = pos;
+            if (!updateLegendTimeout) {
+                updateLegendTimeout = setTimeout(updateLegend, 50);
+            }
+        });
+
+        $("#chart1").bind("plothover", function (event, pos, item) {
+            if (item) {
+                if (previousPoint != item.dataIndex) {
+                    previousPoint = item.dataIndex;
+
+                    $("#tooltip").remove();
+                    var x = item.datapoint[0].toFixed(0), y = item.datapoint[1].toFixed(0);
+
+                    showTooltip(item.pageX, item.pageY, "(" + x + "," + y + ")");
+                }
+            }
+            else {
+                $("#tooltip").remove();
+                previousPoint = null;
+            }
+        });
+
+
+
+        var bar_data = [
+            {data: [[0,1]], color: "red"},
+            {data: [[1,2]], color: "yellow"},
+            {data: [[2,3]], color: "green"}
+        ];
+        plotObj2 = $.plot("#chart2", bar_data, bar_option);
+
+
+        var stack_data = [{
+            label: "United States",
+            data: [[1990, 18.9], [1991, 18.7], [1992, 18.4], [1993, 19.3], [1994, 19.5], [1995, 19.3], [1996, 19.4], [1997, 20.2], [1998, 19.8], [1999, 19.9], [2000, 20.4], [2001, 20.1], [2002, 20.0], [2003, 19.8], [2004, 20.4]]
+        }, {
+            label: "Russia",
+            data: [[1990, 28.9], [1991, 38.7], [1992, 13.4], [1993, 12.2], [1994, 10.6], [1995, 10.2], [1996, 10.1], [1997, 9.7], [1998, 9.5], [1999, 9.7], [2000, 9.9], [2001, 9.9], [2002, 9.9], [2003, 10.3], [2004, 10.5]]
+        }, {
+            label: "United Kingdom",
+            data: [[1990, 10.0], [1991, 11.3], [1992, 9.9], [1993, 9.6], [1994, 9.5], [1995, 9.5], [1996, 9.9], [1997, 9.3], [1998, 9.2], [1999, 9.2], [2000, 9.5], [2001, 9.6], [2002, 9.3], [2003, 9.4], [2004, 9.79]]
+        }, {
+            label: "Germany",
+            data: [[1990, 12.4], [1991, 11.2], [1992, 10.8], [1993, 10.5], [1994, 10.4], [1995, 10.2], [1996, 10.5], [1997, 10.2], [1998, 10.1], [1999, 9.6], [2000, 9.7], [2001, 10.0], [2002, 9.7], [2003, 9.8], [2004, 9.79]]
+        }, {
+            label: "Denmark",
+            data: [[1990, 9.7], [1991, 12.1], [1992, 10.3], [1993, 11.3], [1994, 11.7], [1995, 10.6], [1996, 12.8], [1997, 10.8], [1998, 10.3], [1999, 9.4], [2000, 8.7], [2001, 9.0], [2002, 8.9], [2003, 10.1], [2004, 9.80]]
+        }, {
+            label: "Sweden",
+            data: [[1990, 5.8], [1991, 6.0], [1992, 5.9], [1993, 5.5], [1994, 5.7], [1995, 5.3], [1996, 6.1], [1997, 5.4], [1998, 5.4], [1999, 5.1], [2000, 5.2], [2001, 5.4], [2002, 6.2], [2003, 5.9], [2004, 5.89]]
+        }, {
+            label: "Norway",
+            data: [[1990, 8.3], [1991, 8.3], [1992, 7.8], [1993, 8.3], [1994, 8.4], [1995, 5.9], [1996, 6.4], [1997, 6.7], [1998, 6.9], [1999, 7.6], [2000, 7.4], [2001, 8.1], [2002, 12.5], [2003, 9.9], [2004, 19.0]]
+        }];
+
+        plotObj3 = $.plot("#chart3", stack_data, stack_option);
+        $("#chart3").bind("plotselected", function (event, ranges) {
+            if (true) {
+                $.each(plotObj3.getXAxes(), function(_, axis) {
+                    var opts = axis.options;
+                    opts.min = ranges.xaxis.from;
+                    opts.max = ranges.xaxis.to;
+                });
+                plotObj3.setupGrid();
+                plotObj3.draw();
+                plotObj3.clearSelection();
+            }
+        });
+
+        // Zoom Reset 로직 넣기
+        $("#chart3").dblclick(function () {
+            var axes = plotObj3.getAxes(),
+                xaxis = axes.xaxis.options,
+                yaxis = axes.yaxis.options;
+            xaxis.min = null;
+            xaxis.max = null;
+            yaxis.min = null;
+            yaxis.max = null;
+
+            // Don't forget to redraw the plot
+            plotObj3.setupGrid();
+            plotObj3.draw();
+
+            plotObj3 = $.plot("#chart3", stack_data, options);
+        });
+
+
+        var scatter_data = [
+            { label: "label 1", data: getRandomData()}
+        ];
+
+        //plotObj4 = $.plot("#chart4", scatter_data, scatter_option);
+        plotObj4 = $.plot("#chart4", scatter_data, scatter_option);
+
+        function update() {
+            plotObj4.setData([getRandomData()]);
+            // Since the axes don't change, we don't need to call plot.setupGrid()
+            plotObj4.draw();
+            setTimeout(update, 10);
+        }
+
+        update();
+
+        function getRandomData() { // 랜덤데이터 출력
+            if (randam_data.length > 0)
+                randam_data = randam_data.slice(1);
+
+            while (randam_data.length < totalPoints) {
+                var prev = randam_data.length > 0 ? randam_data[randam_data.length - 1] : 50,
+                    y = prev + Math.random() * 10 - 5;
+                if (y < 0) {
+                    y = 0;
+                } else if (y > 100) {
+                    y = 100;
+                }
+                randam_data.push(y);
+            }
+
+            var res = [];
+            for (var i = 0; i < randam_data.length; ++i) {
+                res.push([i, randam_data[i]])
+            }
+            return res;
+        }
+
+    });
+
+
+    var bar_option = {
+        series: {
+            bars: {
+                show: true,
+                barWidth: 0.3,
+                align: "center",
+                lineWidth: 0,
+                fill:.75
+            }
+        },
+        xaxis: { // categories 옵션
+            ticks: [[0,"Red"],[1,"Yellow"],[2,"Green"]]
+        }
+    };
+
+    var stack_option = {
+        series: {
+            stack: true,
+            lines: {
+                show: true,
+                fill: true
+            },
+            points: { show: false },
+        },
+        selection: {
+            mode: "xy"
+        },
+        xaxis: {
+            //timezone: 'time',
+            //mode:'time',
+            //timeformat: "%Y-%m-%d"
+        }
+    };
+
+    var scatter_option = {
+        series: {
+            lines: { show: false },
+            points: { show: true }
+        }
+    };
+
+    function showTooltip(x, y, contents) {
+        $('<div id="tooltip">' + contents + '</div>').css({
+            position: 'absolute',
+            display: 'none',
+            top: y + 5,
+            left: x + 5,
+            border: '1px solid #fdd',
+            padding: '2px',
+            'background-color': '#fee'
+        }).appendTo("body").fadeIn(200);
+    }
+
+
+
+</script>
+
+<body>
+<div id="header" style="text-align: center;">
+    <h2>flot.js 샘플</h2>
+</div>
+<br><br>
+<div id="content">
+    <div id="legendContainer"></div>
+    <div id="chart1" style="width: 100%; height: 300px;"></div>
+    <div id="chart2" style="width: 100%; height: 300px;"></div>
+    <div id="chart3" style="width: 100%; height: 300px;"></div>
+    <div id="chart4" style="width: 100%; height: 300px;"></div>
+</div>
+
+<br><br><br><br>
+<div id="footer" style="text-align: center;">
+    Copyright &copy; 2017 Inflern Service
+</div>
+</body>
+</html>

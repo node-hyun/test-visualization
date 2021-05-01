@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>인프런과 함께하는 시각화 강좌</title>
+
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.flot.js"></script>
+    <script src="/lib/flot/jquery.flot.time.js"></script>
+    <script src="custom.js"></script>
+
+</head>
+<script type="text/javascript">
+    var timedata1 = [[1167692400000,61.05], [1167778800000,58.32], [1167865200000,57.35], [1167951600000,56.31], [1168210800000,55.55], [1168297200000,55.64], [1168383600000,54.02], [1168470000000,51.88], [1168556400000,52.99]];
+    var timedata2 = [[1167606000000,55.05], [1167692400000,150.72], [1167778800000,101.55], [1167865200000,9.23], [1167951600000,87.12], [1168038000000,6.55], [1168124400000,78.43], [1168210800000,92.16], [1168297200000,43.88]];
+    var previousPoint = null;
+
+    $(document).ready(function () {
+        var d1 = [];
+        for (var i = 0; i < 14; i += 0.5) {
+            d1.push([i, Math.sin(i)]);
+        }
+        var d2 = [[0, 3], [4, 8], [8, 5], [9, 13]];
+        var d3 = [[0, 12], [7, 12], null, [7, 2.5], [12, 2.5]];
+
+        //$.plot("#chart", [ d1 ]);
+        //$.plot("#chart", [ d2 ]);
+        //$.plot("#chart", [ d1, d2, d3 ]);
+        // $.plot("DOM Object", [데이터+옵션], [옵션])
+
+        //var plotObj = $.plot("#chart", [d1], lineOption);
+        var plotObj = $.plot("#chart", [timedata1, timedata2], lineOption);
+
+        /*
+            1. 차트가 데이터를 받아 기존 차트가 만들어지는지 구성
+            2. 차트가 특정 옵션들을 어떠한 형식들로 받아 기본 차트가 만들어지는지 구성
+            3. 없는 기능이나 옵션들을 어떻게 사용자가 만들어내는지 커스텀환경을 구성
+            4. 종합적으로 실무에서 어떤 데이터를 받아서 표현하는가?
+         */
+
+        $("#chart").bind("plothover", function (event, pos, item) {
+            if (item) {
+                if (previousPoint != item.dataIndex) {
+                    previousPoint = item.dataIndex;
+
+                    $("#tooltip").remove();
+                    var x = item.datapoint[0].toFixed(0), y = item.datapoint[1].toFixed(0);
+
+                    showTooltip(item.pageX, item.pageY, "(" + x + "," + y + ")");
+                }
+            }
+            else {
+                $("#tooltip").remove();
+                previousPoint = null;
+            }
+        });
+    });
+
+    function showTooltip(x, y, contents) {
+        $('<div id="tooltip">' + contents + '</div>').css({
+            position: 'absolute',
+            display: 'none',
+            top: y + 5,
+            left: x + 5,
+            border: '1px solid #fdd',
+            padding: '2px',
+            'background-color': '#fee'
+        }).appendTo("body").fadeIn(200);
+    }
+</script>
+
+<body>
+<div id="header">
+    <h2>flot.js 샘플</h2>
+</div>
+
+<div id="content">
+    <div id="chart" style="width: 100%; height: 300px;"></div>
+</div>
+
+<div id="footer">
+    Copyright &copy; 2017 Inflern Service
+</div>
+</body>
+</html>

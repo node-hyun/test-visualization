@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>인프런과 함께하는 시각화 강좌</title>
+
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="/lib/flot/jquery.flot.js"></script>
+    <script src="/lib/flot/jquery.flot.pie.js"></script>
+    <script src="custom.js"></script>
+
+</head>
+<script type="text/javascript">
+    var data = [];
+    $(document).ready(function () {
+        // Example Data
+
+        //var data = [
+        //	{ label: "Series1",  data: 10},
+        //	{ label: "Series2",  data: 30},
+        //	{ label: "Series3",  data: 90},
+        //	{ label: "Series4",  data: 70},
+        //	{ label: "Series5",  data: 80},
+        //	{ label: "Series6",  data: 110}
+        //];
+
+        //var data = [
+        //	{ label: "Series1",  data: [[1,10]]},
+        //	{ label: "Series2",  data: [[1,30]]},
+        //	{ label: "Series3",  data: [[1,90]]},
+        //	{ label: "Series4",  data: [[1,70]]},
+        //	{ label: "Series5",  data: [[1,80]]},
+        //	{ label: "Series6",  data: [[1,0]]}
+        //];
+
+        //var data = [
+        //	{ label: "Series A",  data: 0.2063},
+        //	{ label: "Series B",  data: 38888}
+        //];
+
+        // Randomly Generated Data
+
+        data = [],  series = Math.floor(Math.random() * 6) + 3;
+
+        for (var i = 0; i < series; i++) {
+            data[i] = {
+                label: "Series" + (i + 1),
+                data: Math.floor(Math.random() * 100) + 1
+            }
+        }
+
+        $.plot("#chart", data, pie_option1);
+
+        $('#chart').bind("plothover", function(event, pos, obj) {
+
+            if (!obj) {
+                return;
+            }
+
+            var percent = parseFloat(obj.series.percent).toFixed(2);
+            $("#hover").html("<span style='font-weight:bold; color:" + obj.series.color + "'>" + obj.series.label + " (" + percent + "%)</span>");
+        });
+
+        $('#chart').bind("plotclick", function(event, pos, obj) {
+
+            if (!obj) {
+                return;
+            }
+
+            percent = parseFloat(obj.series.percent).toFixed(2);
+            alert(""  + obj.series.label + ": " + percent + "%");
+        });
+    });
+
+
+    function labelFormatter(label, series) {
+        return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+    }
+
+    var pie_option1 = { // default
+        series: {
+            pie: {
+                show: true
+            }
+        }
+    };
+
+    var pie_option2 = { // Without Pie
+        series: {
+            pie: {
+                show: true
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option3 = { // label Fomatter
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                label: {
+                    show: true,
+                    radius: 1,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.8
+                    }
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option4 = { // label Radius
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                label: {
+                    show: true,
+                    radius: 3/4,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.5
+                    }
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option5 = { // label Style 1
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                label: {
+                    show: true,
+                    radius: 3/4,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.5,
+                        color: '#000'
+                    }
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option6 = { // label Style 2
+        series: {
+            pie: {
+                show: true,
+                radius: 3/4,
+                label: {
+                    show: true,
+                    radius: 3/4,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.5,
+                        color: '#000'
+                    }
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option7 = { // Hidden labels
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                label: {
+                    show: true,
+                    radius: 2/3,
+                    formatter: labelFormatter,
+                    threshold: 0.1
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option8 = { // Combined Slice
+        series: {
+            pie: {
+                show: true,
+                combine: {
+                    color: '#999',
+                    threshold: 0.1
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option9 = { // Rectangular Pie
+        series: {
+            pie: {
+                show: true,
+                radius: 500,
+                label: {
+                    show: true,
+                    formatter: labelFormatter,
+                    threshold: 0.1
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option10 = { // Tilted Pie
+        series: {
+            pie: {
+                show: true,
+                radius: 1,
+                tilt: 0.5,
+                label: {
+                    show: true,
+                    radius: 1,
+                    formatter: labelFormatter,
+                    background: {
+                        opacity: 0.8
+                    }
+                },
+                combine: {
+                    color: '#999',
+                    threshold: 0.1
+                }
+            }
+        },
+        legend: {
+            show: false
+        }
+    };
+
+    var pie_option11 = { // Donut Hole
+        series: {
+            pie: {
+                innerRadius: 0.5,
+                show: true
+            }
+        }
+    };
+
+    var pie_option12 = { // Interactivity
+        series: {
+            pie: {
+                show: true
+            }
+        },
+        grid: {
+            hoverable: true,
+            clickable: true
+        }
+    };
+
+    function clickPie(obj) {
+        switch(obj) {
+            case 1:
+                $.plot("#chart", data, pie_option1);
+                break;
+            case 2:
+                $.plot("#chart", data, pie_option2);
+                break;
+            case 3:
+                $.plot("#chart", data, pie_option3);
+                break;
+            case 4:
+                $.plot("#chart", data, pie_option4);
+                break;
+            case 5:
+                $.plot("#chart", data, pie_option5);
+                break;
+            case 6:
+                $.plot("#chart", data, pie_option6);
+                break;
+            case 7:
+                $.plot("#chart", data, pie_option7);
+                break;
+            case 8:
+                $.plot("#chart", data, pie_option8);
+                break;
+            case 9:
+                $.plot("#chart", data, pie_option9);
+                break;
+            case 10:
+                $.plot("#chart", data, pie_option10);
+                break;
+            case 11:
+                $.plot("#chart", data, pie_option11);
+                break;
+            case 12:
+                $.plot("#chart", data, pie_option12);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+</script>
+
+<body>
+<div id="header" style="text-align: center;">
+    <h2>flot.js 샘플</h2>
+</div>
+<div style="text-align: center;">
+    <a href="javascript:clickPie(1)">Default</a>
+    <a href="javascript:clickPie(2)">Without Legend</a>
+    <a href="javascript:clickPie(3)">Label Fomatter</a>
+    <a href="javascript:clickPie(4)">Label Radius</a>
+    <a href="javascript:clickPie(5)">Label Style #1</a>
+    <a href="javascript:clickPie(6)">Label Style #2</a>
+    <a href="javascript:clickPie(7)">Hidden Labels</a>
+    <a href="javascript:clickPie(8)">Combined Slice</a>
+    <a href="javascript:clickPie(9)">Rectangular Pie</a>
+    <a href="javascript:clickPie(10)">Tilted Pie</a>
+    <a href="javascript:clickPie(11)">Donut Hole</a>
+    <a href="javascript:clickPie(12)">Interactivity</a>
+</div>
+<br><br>
+<div id="content">
+    <div id="chart" style="width: 100%; height: 300px; text-align: center;"></div>
+</div>
+<br><br><br><br>
+<div id="footer" style="text-align: center;">
+    Copyright &copy; 2017 Inflern Service
+</div>
+</body>
+</html>

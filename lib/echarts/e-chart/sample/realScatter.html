@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ECharts">
+    <meta name="author" content="kener.linfeng@gmail.com">
+    <title>ECharts · Example</title>
+
+    <link rel="shortcut icon" href="/essets/e-chart/asset/ico/favicon.png">
+
+    <link href="/essets/e-chart/asset/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/essets/e-chart/asset/css/bootstrap.css" rel="stylesheet">
+    <link href="/essets/e-chart/asset/css/carousel.css" rel="stylesheet">
+    <link href="/essets/e-chart/asset/css/echartsHome.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="/essets/e-chart/echarts.js"></script>
+    <script src="/essets/e-chart/asset/js/codemirror.js"></script>
+    <script src="/essets/e-chart/asset/js/javascript.js"></script>
+
+    <link href="/essets/e-chart/asset/css/codemirror.css" rel="stylesheet">
+    <link href="/essets/e-chart/asset/css/monokai.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation" id="head"></div>
+
+
+    <div class="container-fluid">
+        <div class="row-fluid example">
+            <div id="sidebar-code" class="col-md-4">
+                <div class="well sidebar-nav">
+                    <div class="nav-header"><a href="#" onclick="autoResize()" class="glyphicon glyphicon-resize-full" id ="icon-resize" ></a>option</div>
+                    <textarea id="code" name="code">
+option = {
+    title : {
+        text: '제목',
+        subtext: '서브제목'
+    },
+    tooltip : {
+        trigger: 'axis'
+    },
+    legend: {
+        data:['동그라미']
+    },
+    toolbox: {
+        show : true,
+        feature : {
+            mark : {show: true},
+            dataView : {show: true, readOnly: false},
+            restore : {show: true},
+            saveAsImage : {show: true}
+        }
+    },
+    dataZoom : {
+        show : true,
+        realtime: true,
+        start : 50,
+        end : 100
+    },
+    xAxis : [
+        {
+            type : 'category',
+            boundaryGap : true,
+            data : [
+                "2013/1/24", "2013/1/25", "2013/1/28", "2013/1/29", "2013/1/30",
+                "2013/1/31", "2013/2/1", "2013/2/4", "2013/2/5", "2013/2/6", 
+                "2013/2/7", "2013/2/8", "2013/2/18", "2013/2/19", "2013/2/20", 
+                "2013/2/21", "2013/2/22", "2013/2/25", "2013/2/26", "2013/2/27", 
+                "2013/2/28", "2013/3/1", "2013/3/4", "2013/3/5", "2013/3/6", 
+                "2013/3/7", "2013/3/8", "2013/3/11", "2013/3/12", "2013/3/13", 
+                "2013/3/14", "2013/3/15", "2013/3/18", "2013/3/19", "2013/3/20", 
+                "2013/3/21", "2013/3/22", "2013/3/25", "2013/3/26", "2013/3/27", 
+                "2013/3/28", "2013/3/29", "2013/4/1", "2013/4/2", "2013/4/3", 
+                "2013/4/8", "2013/4/9", "2013/4/10", "2013/4/11", "2013/4/12", 
+                "2013/4/15", "2013/4/16", "2013/4/17", "2013/4/18", "2013/4/19", 
+                "2013/4/22", "2013/4/23", "2013/4/24", "2013/4/25", "2013/4/26", 
+                "2013/5/2", "2013/5/3", "2013/5/6", "2013/5/7", "2013/5/8", 
+                "2013/5/9", "2013/5/10", "2013/5/13", "2013/5/14", "2013/5/15", 
+                "2013/5/16", "2013/5/17", "2013/5/20", "2013/5/21", "2013/5/22", 
+                "2013/5/23", "2013/5/24", "2013/5/27", "2013/5/28", "2013/5/29", 
+                "2013/5/30", "2013/5/31", "2013/6/3", "2013/6/4", "2013/6/5", 
+                "2013/6/6", "2013/6/7", "2013/6/13"
+            ]
+        },
+        {
+            type : 'value',
+            max:100,
+            scale: true
+        }
+    ],
+    yAxis : [
+        {
+            type : 'value',
+            splitNumber: 5,
+            scale: true
+        }
+    ],
+    series : [
+        {
+            name:'随机数据',
+            type:'scatter',
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            symbolSize: function (value){
+                return Math.round(value[2] / 4);
+            },
+            data: (function () {
+                var d = [];
+                var len = 100;
+                while (len--) {
+                    d.push([
+                        (Math.random()*100).toFixed(2) - 0,
+                        (Math.random()*100).toFixed(2) - 0,
+                        (Math.random()*100).toFixed(2) - 0
+                    ]);
+                }
+                return d;
+            })()
+        }
+    ]
+};
+var lastIndex = 0;
+var len = option.series[0].data.length;
+clearInterval(timeTicket);
+timeTicket = setInterval(function (){
+    // 动态数据接口 addData
+    lastIndex += 1;
+    myChart.addData([
+        [
+            0,        // 系列索引
+            [
+                (Math.random()*100).toFixed(2) - 0,
+                (Math.random()*100).toFixed(2) - 0,
+                (Math.random()*100).toFixed(2) - 0
+            ], // 新增数据
+            false,    // 新增数据是否从队列头部插入
+            false    // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
+        ]
+    ]);
+}, 2000);
+                    </textarea>
+              </div><!--/.well -->
+            </div><!--/span-->
+            <div id="graphic" class="col-md-8">
+                <div id="main" class="main"></div>
+                <div>
+                    <button type="button" class="btn btn-sm btn-success" onclick="refresh(true)">刷 新</button>
+                    <span class="text-primary">切换主题</span>
+                    <select id="theme-select"></select>
+
+                    <span id='wrong-message' style="color:red"></span>
+                </div>
+            </div><!--/span-->
+        </div><!--/row-->
+        
+        </div><!--/.fluid-container-->
+
+    <footer id="footer"></footer>
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/essets/e-chart/asset/js/echartsHome.js"></script>
+    <script src="/essets/e-chart/asset/js/bootstrap.min.js"></script>
+    <script type="text/javascript">var timeTicket;</script>
+    <script src="/essets/e-chart/asset/js/echartsExample.js"></script>
+</body>
+</html>
